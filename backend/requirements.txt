@@ -1,0 +1,20 @@
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-dotenv==1.0.0
+google-api-python-client==2.114.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+httpx==0.26.0
+
+# Database
+sqlalchemy==2.0.25
+alembic==1.13.1
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+
+# Task Queue
+celery==5.3.6
+redis==5.0.1
+
