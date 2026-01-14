@@ -1,24 +1,33 @@
 from app.celery_app import celery_app
-
-
-@celery_app.task
-def send_scheduled_email(thread_id: str, message_content: str):
-    """
-    Task to send a scheduled email.
-    Implement your Gmail sending logic here.
-    """
-    # TODO: Implement Gmail send logic
-    print(f"Sending email to thread {thread_id}: {message_content}")
-    return {"status": "sent", "thread_id": thread_id}
-
+from app.db.session import get_db
+from app.db.base import Email, EmailStatus
 
 @celery_app.task
-def check_thread_for_new_emails(thread_id: str):
-    """
-    Task to check if a thread has new emails.
-    If new email found, cancel scheduled messages.
-    """
-    # TODO: Implement Gmail thread check logic
-    print(f"Checking thread {thread_id} for new emails")
-    return {"status": "checked", "thread_id": thread_id}
+def send_scheduled_email(thread_id: str):
+    db = next(get_db())
 
+    if db is None:
+        raise Exception("Database connection not found")
+    
+    email = db.query(Email).filter(Email.thread_id == thread_id).first()
+
+    if email is None or email.cancelled:
+        raise Exception("Email not found")
+    
+    if email.cancelled:
+        raise Exception("Email has been cancelled")
+
+    try:
+        # TODO: Implement Gmail sending logic
+        pass
+    except Exception as e:
+        email.status = EmailStatus.FAILED
+        email.cancelled_reason = str(e)
+        db.commit()
+        db.refresh(email)
+        raise e
+
+    email.status = EmailStatus.SENT
+    email.sent = True
+    db.commit()
+    db.refresh(email)

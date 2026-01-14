@@ -1,16 +1,24 @@
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, MappedColumn, Integer, String, DateTime, Boolean
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import String, DateTime, Boolean, Enum as SQLAlchemyEnum
 from datetime import datetime
+from typing import Optional
+import enum
 
+class EmailStatus(enum.Enum):
+    SCHEDULED = "scheduled"
+    SENT = "sent"
+    CANCELLED = "cancelled"
+    FAILED = "failed"
 class Base(DeclarativeBase):
     pass
 
 class Email(Base):
     __tablename__ = "emails"
-    id: Mapped[int] = MappedColumn(Integer, primary_key=True)
-    email_id: Mapped[str] = MappedColumn(String, unique=True)
-    status: Mapped[str] = MappedColumn(String)
-    scheduled_time: Mapped[datetime] = MappedColumn(DateTime)
-    sent: Mapped[bool] = MappedColumn(Boolean)
-    cancelled: Mapped[bool] = MappedColumn(Boolean)
-    cancelled_reason: Mapped[str] = MappedColumn(String)
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    thread_id: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    status: Mapped[EmailStatus] = mapped_column(SQLAlchemyEnum(EmailStatus))
+    scheduled_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    sent: Mapped[bool] = mapped_column(Boolean, default=False)
+    cancelled: Mapped[bool] = mapped_column(Boolean, default=False)
+    cancelled_reason: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)

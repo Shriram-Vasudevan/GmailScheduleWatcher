@@ -4,12 +4,33 @@ from app.db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.base import Email
 from sqlalchemy import select
+from fastapi.responses import JSONResponse
+from app.tasks import send_scheduled_email
 
 router = APIRouter()
 
 @router.post("/schedule-email")
-async def schedule_email(schedule_email_request: ScheduleEmailRequest):
-    return {"message": "Email scheduled successfully"}
+async def schedule_email(schedule_email_request: ScheduleEmailRequest, db: AsyncSession = Depends(get_db)):
+    new_email = Email(
+        email_id=schedule_email_request.thread_id,
+        status="scheduled",
+        scheduled_time=schedule_email_request.scheduled_time,
+        sent=False,
+        cancelled=False,
+        cancelled_reason=""
+    )
+
+    db.add(new_email)
+    await db.commit()
+    await db.refresh(new_email)
+
+    # Schedule the Celery task to run at the specified time
+    send_scheduled_email.apply_async(
+        args=[schedule_email_request.thread_id, schedule_email_request.message_content],
+        eta=schedule_email_request.scheduled_time 
+    )
+
+    return JSONResponse(status_code=201, content={"message": "Email scheduled successfully"})
 
 @router.get("/get-email-status")
 async def schedule_email_status(get_email_status_request: GetEmailStatusRequest, db: AsyncSession = Depends(get_db)) -> EmailStatusResponse:
