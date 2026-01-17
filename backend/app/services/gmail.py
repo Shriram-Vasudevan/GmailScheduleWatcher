@@ -18,7 +18,7 @@ TOKEN_FILE = os.getenv("GMAIL_TOKEN_FILE", "token.json")
 
 
 def get_gmail_service():
-    """Build and return Gmail API service with OAuth2 credentials."""
+    # Build and return Gmail API service with OAuth2 credentials
     creds = None
 
     if os.path.exists(TOKEN_FILE):
@@ -43,7 +43,7 @@ def get_gmail_service():
 
 
 def create_message(to: str, subject: str, body: str, thread_id: str | None = None) -> dict:
-    """Create an email message for the Gmail API."""
+    # Create an email message for the Gmail API
     message = MIMEMultipart()
     message["to"] = to
     message["subject"] = subject
@@ -59,20 +59,7 @@ def create_message(to: str, subject: str, body: str, thread_id: str | None = Non
 
 
 def send_email(to: str, subject: str, body: str, thread_id: str | None = None) -> dict:
-    """Send an email using the Gmail API.
-
-    Args:
-        to: Recipient email address
-        subject: Email subject
-        body: Email body content
-        thread_id: Optional Gmail thread ID to reply to an existing thread
-
-    Returns:
-        The sent message response from Gmail API
-
-    Raises:
-        HttpError: If the Gmail API request fails
-    """
+    # Send an email using the Gmail API. This function is used to send emails to a recipient
     service = get_gmail_service()
     message = create_message(to, subject, body, thread_id)
 
@@ -87,14 +74,8 @@ def send_email(to: str, subject: str, body: str, thread_id: str | None = None) -
 
 
 def get_thread(thread_id: str) -> dict:
-    """Get a Gmail thread by ID.
+    # Get a Gmail thread by ID
 
-    Args:
-        thread_id: The Gmail thread ID
-
-    Returns:
-        The thread data from Gmail API
-    """
     service = get_gmail_service()
     try:
         thread = service.users().threads().get(userId="me", id=thread_id).execute()
@@ -104,15 +85,9 @@ def get_thread(thread_id: str) -> dict:
 
 
 def check_thread_has_new_messages(thread_id: str, since_message_count: int) -> bool:
-    """Check if a thread has received new messages since scheduling.
+    # Check if a thread has received new messages since scheduling.
 
-    Args:
-        thread_id: The Gmail thread ID
-        since_message_count: The message count when the email was scheduled
 
-    Returns:
-        True if there are new messages in the thread
-    """
     try:
         thread = get_thread(thread_id)
         current_count = len(thread.get("messages", []))
