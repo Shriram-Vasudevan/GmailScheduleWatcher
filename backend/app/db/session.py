@@ -39,3 +39,12 @@ async def get_db():
             yield session
         finally:
             await session.close()
+
+
+def get_sync_db():
+    """Synchronous database session for Celery tasks."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
