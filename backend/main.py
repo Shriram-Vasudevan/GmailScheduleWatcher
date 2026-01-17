@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes.scheduler import router as scheduler_router
 
 app = FastAPI(
     title="Gmail Schedule Watcher",
@@ -24,3 +25,6 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+
+app.include_router(scheduler_router, prefix="/api", tags=["scheduler"])

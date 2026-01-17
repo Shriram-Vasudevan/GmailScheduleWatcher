@@ -87,7 +87,6 @@ def get_thread(thread_id: str) -> dict:
 def check_thread_has_new_messages(thread_id: str, since_message_count: int) -> bool:
     # Check if a thread has received new messages since scheduling.
 
-
     try:
         thread = get_thread(thread_id)
         current_count = len(thread.get("messages", []))

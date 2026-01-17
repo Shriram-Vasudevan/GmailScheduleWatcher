@@ -3,10 +3,12 @@ from datetime import datetime, timezone
 
 class ScheduleEmailRequest(BaseModel):
     thread_id: str
+    to: str
     subject: str
     message_content: str
     scheduled_time: datetime
-    
+    message_count_at_schedule: int = 0  # For auto-cancel on thread reply
+
     @field_validator("scheduled_time")
     def validate_scheduled_time(cls, v):
         if v < datetime.now(timezone.utc):
