@@ -1,6 +1,6 @@
 import * as React from "react"
 
-export const useGmailserver = () => {
+export const useGmailServer = () => {
     const serverURL = process.env.NEXT_PUBLIC_SERVER_URL;
 
     const [email, setEmail] = React.useState("");
