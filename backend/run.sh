@@ -59,3 +59,4 @@ echo -e "${GREEN}🌐 Starting FastAPI server...${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
+

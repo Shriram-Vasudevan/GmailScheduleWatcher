@@ -8,7 +8,7 @@ celery_app = Celery(
     "gmail_scheduler",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["app.tasks", "app.celery_app"],
+    include=["app.tasks"],
 )
 
 celery_app.conf.update(
